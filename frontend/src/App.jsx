@@ -146,18 +146,30 @@ export default function App() {
         <div className="topbar">
           <button className="icon-btn" onClick={() => setMenu(true)} aria-label="Menu"><Icon name="Menu" /></button>
           <span className="mut">CRM</span> <span className="mut">/</span> <b>{ENTITIES[page]?.title}</b>
-          {user.role === 'Admin' && (
+          <div className="topbar-right">
+            {user.role === 'Admin' && (
+              <button
+                className="btn-clear-all"
+                onClick={() => { setClearErr(''); setConfirmClear(true) }}
+                title="Delete all CRM records from database"
+              >
+                <Icon name="Trash2" size={14} />
+                <span className="btn-label">Clear all records</span>
+              </button>
+            )}
+            {!LIVE && (
+              <button className="reset" onClick={() => { db.resetDemo(); db.loadAll().then(setData) }}>Reset demo</button>
+            )}
             <button
-              className="btn-clear-all"
-              onClick={() => { setClearErr(''); setConfirmClear(true) }}
-              title="Delete all CRM records from database"
+              className="topbar-logout"
+              onClick={async () => { await auth.signOut(); setUser(null) }}
+              title="Sign out"
+              aria-label="Sign out"
             >
-              <Icon name="Trash2" size={14} /> Clear all records
+              <Icon name="LogOut" size={16} />
+              <span className="logout-text">Sign out</span>
             </button>
-          )}
-          {!LIVE && (
-            <button className="reset" onClick={() => { db.resetDemo(); db.loadAll().then(setData) }}>Reset demo data</button>
-          )}
+          </div>
         </div>
         <div className="content">
           {error && <div className="err">{error}</div>}
