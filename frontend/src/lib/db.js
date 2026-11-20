@@ -28,7 +28,6 @@ const DEMO_KEY = 'saqr_demo_v1'
 const demo = () => store.get(DEMO_KEY) || (store.set(DEMO_KEY, seed()), mem[DEMO_KEY])
 
 export const DEMO_USERS = [
-  { email: 'alyankabir5@gmail.com', password: 'Admin@123', name: 'Alyan', role: 'Admin' },
   { email: 'admin@saqr.demo', password: 'Admin@123', name: 'Admin User', role: 'Admin' },
   { email: 'ops@saqr.demo', password: 'Ops@123', name: 'Operations User', role: 'Operations' },
   { email: 'finance@saqr.demo', password: 'Finance@123', name: 'Finance User', role: 'Finance' },
