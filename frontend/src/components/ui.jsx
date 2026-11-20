@@ -75,15 +75,19 @@ export function FileField({ value, onChange, kind = 'file', disabled }) {
   const multi = kind === 'photos'
   const list = multi ? value || [] : value ? [value] : []
   const pick = async (e) => {
-    const files = [...e.target.files]
-    e.target.value = ''
+    const files = Array.from(e.target.files || [])
     if (!files.length) return
-    setBusy(true); setErr('')
+    setBusy(true)
+    setErr('')
     try {
       const up = await Promise.all(files.map((f) => db.upload(f)))
       onChange(multi ? [...list, ...up] : up[0])
-    } catch (x) { setErr(x.message) }
-    setBusy(false)
+    } catch (x) {
+      setErr(x.message || 'Upload failed')
+    } finally {
+      if (ref.current) ref.current.value = ''
+      setBusy(false)
+    }
   }
   return (
     <div className="filefield">
@@ -95,7 +99,14 @@ export function FileField({ value, onChange, kind = 'file', disabled }) {
       )}
       {!disabled && (
         <>
-          <input ref={ref} type="file" hidden multiple={multi} accept={kind === 'file' ? 'image/*,application/pdf' : 'image/*'} onChange={pick} />
+          <input
+            ref={ref}
+            type="file"
+            hidden
+            multiple={multi}
+            accept={kind === 'file' ? '.pdf,.png,.jpg,.jpeg,.webp,image/*,application/pdf' : '.png,.jpg,.jpeg,.webp,image/*'}
+            onChange={pick}
+          />
           <button type="button" className="btn ghost sm" disabled={busy} onClick={() => ref.current.click()}>
             <Icon name="Upload" size={14} /> {busy ? 'Uploading…' : multi ? 'Add photos' : value ? 'Replace' : kind === 'image' ? 'Upload photo' : 'Upload file'}
           </button>

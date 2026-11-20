@@ -205,10 +205,17 @@ export const db = {
   // Upload a file → { name, url }. Live: Supabase Storage bucket "files". Demo: data URL.
   async upload(file) {
     if (LIVE) {
-      const path = `${crypto.randomUUID()}-${file.name.replace(/[^\w.-]/g, '_')}`
-      const { error } = await sb.storage.from('files').upload(path, file)
+      const ext = (file.name.split('.').pop() || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+      const safeBase = (file.name.slice(0, file.name.lastIndexOf('.')) || 'file').replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 40)
+      const path = `${crypto.randomUUID()}-${safeBase}${ext ? '.' + ext : ''}`
+      const { error } = await sb.storage.from('files').upload(path, file, {
+        cacheControl: '3600',
+        upsert: true,
+        contentType: file.type || undefined,
+      })
       if (error) throw new Error(error.message)
-      return { name: file.name, url: sb.storage.from('files').getPublicUrl(path).data.publicUrl }
+      const { data: pubData } = sb.storage.from('files').getPublicUrl(path)
+      return { name: file.name, url: pubData.publicUrl }
     }
     return { name: file.name, url: await toDataUrl(file) }
   },
