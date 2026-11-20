@@ -1,0 +1,194 @@
+/* Also update truck-intro/truck-intro.css to match */
+/* Truck intro + curtain reveal. Pure CSS, transform/opacity only, no libraries (~3 KB).
+   Timeline: 0–2.2s truck appears and drives off right · 2.05s light seam flashes at centre
+             2.2–3.05s curtains slide apart (left ← →right) revealing the login page */
+.ti {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  cursor: pointer;
+  color: #fff;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  pointer-events: auto;
+}
+.ti * {
+  box-sizing: border-box;
+}
+
+/* curtains */
+.ti-p {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50.2%;
+  will-change: transform;
+  background: repeating-linear-gradient(90deg, rgba(0, 0, 0, .05) 0 16px, transparent 16px 32px), #1b3f9e;
+  animation-duration: .85s;
+  animation-delay: 2.2s;
+  animation-timing-function: cubic-bezier(.77, 0, .18, 1);
+  animation-fill-mode: forwards;
+}
+.ti-l {
+  left: 0;
+  box-shadow: 2px 0 0 rgba(255, 255, 255, .45), 14px 0 40px rgba(0, 0, 0, .28);
+  animation-name: ti-open-l;
+}
+.ti-r {
+  right: 0;
+  box-shadow: -2px 0 0 rgba(255, 255, 255, .45), -14px 0 40px rgba(0, 0, 0, .28);
+  animation-name: ti-open-r;
+}
+
+/* glowing seam where the curtains meet */
+.ti-seam {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  margin-left: -1.5px;
+  background: linear-gradient(180deg, transparent, #fff 30%, #fff 70%, transparent);
+  box-shadow: 0 0 28px 8px rgba(160, 190, 255, .65);
+  transform: scaleY(0);
+  opacity: 0;
+  animation: ti-seam .95s 2.05s ease forwards;
+}
+
+/* intro scene (sits on top of the curtains, fades just before they open) */
+.ti-stage {
+  position: absolute;
+  inset: 0;
+  animation: ti-stage-out .2s 2.1s ease forwards;
+}
+.ti-lane {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% - 70px);
+  height: 92px;
+}
+.ti-road {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .4) 0 28px, transparent 28px 52px);
+}
+.ti-truck {
+  position: absolute;
+  left: 0;
+  bottom: 6px;
+  width: 88px;
+  height: 88px;
+  opacity: 0;
+  animation: ti-drive 2.2s linear forwards;
+  will-change: transform;
+}
+.ti-truck svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.ti-trail {
+  position: absolute;
+  right: 70%;
+  bottom: 26px;
+  width: 240px;
+  height: 18px;
+  transform-origin: right;
+  transform: scaleX(0);
+  background: repeating-linear-gradient(180deg, transparent 0 4px, rgba(255, 255, 255, .55) 4px 6px, transparent 6px 10px);
+  -webkit-mask-image: linear-gradient(270deg, #000, transparent);
+  mask-image: linear-gradient(270deg, #000, transparent);
+  animation: ti-trail 2.2s linear forwards;
+}
+.ti-word {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% + 28px);
+  text-align: center;
+}
+.ti-word b {
+  display: block;
+  font-size: clamp(28px, 6vw, 44px);
+  font-weight: 600;
+}
+.ti-word span {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: #a9bbf0;
+}
+.ti-cover {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #1b3f9e;
+  animation: ti-cover 2.2s linear forwards;
+  will-change: transform;
+}
+.ti-skip {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, .35);
+  color: #dbe5ff;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font: 12px system-ui, sans-serif;
+  cursor: pointer;
+  z-index: 10;
+}
+
+@keyframes ti-drive {
+  0% { opacity: 0; transform: translate3d(18vw, 14px, 0) scale(.7); }
+  22%, 36% { opacity: 1; transform: translate3d(18vw, 0, 0) scale(1); animation-timing-function: cubic-bezier(.6, 0, .95, .55); }
+  100% { opacity: 1; transform: translate3d(112vw, 0, 0) scale(1); }
+}
+@keyframes ti-cover {
+  0%, 36% { transform: translate3d(18vw, 0, 0); animation-timing-function: cubic-bezier(.6, 0, .95, .55); }
+  100% { transform: translate3d(112vw, 0, 0); }
+}
+@keyframes ti-trail {
+  0%, 36% { transform: scaleX(0); }
+  60%, 100% { transform: scaleX(1); }
+}
+@keyframes ti-stage-out {
+  to { opacity: 0; }
+}
+@keyframes ti-seam {
+  0% { transform: scaleY(0); opacity: 0; }
+  35% { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(1); opacity: 0; }
+}
+@keyframes ti-open-l {
+  to { transform: translate3d(-101%, 0, 0); }
+}
+@keyframes ti-open-r {
+  to { transform: translate3d(101%, 0, 0); }
+}
+
+/* login page entrance animation when curtains part */
+.login.enter main form {
+  animation: ti-rise .8s .15s cubic-bezier(.2, .7, .2, 1) both;
+}
+.login.enter aside {
+  animation: ti-slide .8s .1s cubic-bezier(.2, .7, .2, 1) both;
+}
+@keyframes ti-rise {
+  from { opacity: 0; transform: scale(.93) translateY(14px); }
+}
+@keyframes ti-slide {
+  from { opacity: 0; transform: translateX(-28px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ti { display: none; }
+}
